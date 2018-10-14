@@ -115,6 +115,54 @@ extern "C"
     int ccunicode_CodepointsToUtf16_m(const uint32_t *Codepoints, uint16_t *Utf16Str, int Utf16Size);
     int ccunicode_CodepointsToUtf16_nm(const uint32_t *Codepoints, int CodepointCount, uint16_t *Utf16Str, int Utf16Size);
 
+#ifndef __CCUNICODE_NOSTDALLOC__
+    int ccunicode_Utf8ToUtf16(const uint8_t *Utf8Str, uint16_t **Utf16Str);
+    int ccunicode_Utf8ToUtf16_n(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str);
+
+    int ccunicode_Utf8ToUtf16_m(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size);
+    int ccunicode_Utf8ToUtf16_nm(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size);
+
+    int ccunicode_Utf8ToUtf16_l(const uint8_t *Utf8Str, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount);
+    int ccunicode_Utf8ToUtf16_nl(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount);
+
+    int ccunicode_Utf8ToUtf16_ml(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount);
+#endif
+    int ccunicode_Utf8ToUtf16_a(const uint8_t *Utf8Str, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf8ToUtf16_na(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr);
+
+    int ccunicode_Utf8ToUtf16_ma(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf8ToUtf16_nma(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size, const TCCUnicode_MallocPtr *AllocPtr);
+
+    int ccunicode_Utf8ToUtf16_la(const uint8_t *Utf8Str, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf8ToUtf16_nla(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+
+    int ccunicode_Utf8ToUtf16_mla(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf8ToUtf16_nml(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount);
+
+#ifndef __CCUNICODE_NOSTDALLOC__
+    int ccunicode_Utf16ToUtf8(const uint16_t *Utf16Str, uint8_t **Utf8Str);
+    int ccunicode_Utf16ToUtf8_n(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str);
+
+    int ccunicode_Utf16ToUtf8_m(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size);
+    int ccunicode_Utf16ToUtf8_nm(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size);
+
+    int ccunicode_Utf16ToUtf8_l(const uint16_t *Utf16Str, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount);
+    int ccunicode_Utf16ToUtf8_nl(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount);
+
+    int ccunicode_Utf16ToUtf8_ml(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount);
+#endif
+    int ccunicode_Utf16ToUtf8_a(const uint16_t *Utf16Str, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf16ToUtf8_na(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr);
+
+    int ccunicode_Utf16ToUtf8_ma(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf16ToUtf8_nma(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size, const TCCUnicode_MallocPtr *AllocPtr);
+
+    int ccunicode_Utf16ToUtf8_la(const uint16_t *Utf16Str, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf16ToUtf8_nla(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+
+    int ccunicode_Utf16ToUtf8_mla(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+    int ccunicode_Utf16ToUtf8_nml(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount);
+
 #   ifdef __CCUNICODE_IMPL__
 #   include "ccunicode_impl.h"
 #   endif

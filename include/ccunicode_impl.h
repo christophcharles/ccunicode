@@ -22,6 +22,13 @@
 
 #include <limits.h>
 
+#define CCUNICODE_INTERNAL_TEST(t) \
+    { \
+        int Res = t; \
+        if (Res) \
+            return Res; \
+    }
+
 #ifndef __CCUNICODE_NOSTDALLOC__
 
 #include <stdlib.h>
@@ -33,6 +40,23 @@ static const TCCUnicode_MallocPtr ccunicode_DefaultAllocator =
 };
 
 #endif // __CCUNICODE_NOSTDALLOC__
+
+static int ccunicode_CheckAllocator(const TCCUnicode_MallocPtr **AllocPtr)
+{
+    if (!(*AllocPtr))
+    {
+#ifndef __CCUNICODE_NOSTDALLOC__
+        *AllocPtr = &ccunicode_DefaultAllocator;
+#else
+        return CCUNICODE_NULL_ALLOCATOR;
+#endif
+    }
+
+    if (!(*AllocPtr)->malloc_func || !(*AllocPtr)->free_func)
+        return CCUNICODE_INVALID_ALLOCATOR;
+
+    return CCUNICODE_NO_ERROR;
+}
 
 int ccunicode_GetUtf8StrLen(const uint8_t *Utf8Str)
 {
@@ -354,17 +378,7 @@ int ccunicode_Utf8ToCodepoints_a(const uint8_t *Utf8Str, uint32_t **Codepoints, 
 
 int ccunicode_Utf8ToCodepoints_na(const uint8_t *Utf8Str, int Utf8Size, uint32_t **Codepoints, const TCCUnicode_MallocPtr *AllocPtr)
 {
-    if (!AllocPtr)
-    {
-#ifndef __CCUNICODE_NOSTDALLOC__
-        AllocPtr = &ccunicode_DefaultAllocator;
-#else
-        return CCUNICODE_NULL_ALLOCATOR;
-#endif
-    }
-
-    if (!AllocPtr->malloc_func || !AllocPtr->free_func)
-        return CCUNICODE_INVALID_ALLOCATOR;
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
 
     if (!Codepoints)
         return CCUNICODE_NULL_POINTER;
@@ -510,17 +524,7 @@ int ccunicode_Utf16ToCodepoints_a(const uint16_t *Utf16Str, uint32_t **Codepoint
 
 int ccunicode_Utf16ToCodepoints_na(const uint16_t *Utf16Str, int Utf16Size, uint32_t **Codepoints, const TCCUnicode_MallocPtr *AllocPtr)
 {
-    if (!AllocPtr)
-    {
-#ifndef __CCUNICODE_NOSTDALLOC__
-        AllocPtr = &ccunicode_DefaultAllocator;
-#else
-        return CCUNICODE_NULL_ALLOCATOR;
-#endif
-    }
-
-    if (!AllocPtr->malloc_func || !AllocPtr->free_func)
-        return CCUNICODE_INVALID_ALLOCATOR;
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
 
     if (!Codepoints)
         return CCUNICODE_NULL_POINTER;
@@ -643,17 +647,7 @@ int ccunicode_CodepointsToUtf8_a(const uint32_t *Codepoints, uint8_t **Utf8Str, 
 
 int ccunicode_CodepointsToUtf8_na(const uint32_t *Codepoints, int CodepointCount, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr)
 {
-    if (!AllocPtr)
-    {
-#ifndef __CCUNICODE_NOSTDALLOC__
-        AllocPtr = &ccunicode_DefaultAllocator;
-#else
-        return CCUNICODE_NULL_ALLOCATOR;
-#endif
-    }
-
-    if (!AllocPtr->malloc_func || !AllocPtr->free_func)
-        return CCUNICODE_INVALID_ALLOCATOR;
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
 
     if (!Utf8Str)
         return CCUNICODE_NULL_POINTER;
@@ -776,17 +770,7 @@ int ccunicode_CodepointsToUtf16_a(const uint32_t *Codepoints, uint16_t **Utf16St
 
 int ccunicode_CodepointsToUtf16_na(const uint32_t *Codepoints, int CodepointCount, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr)
 {
-    if (!AllocPtr)
-    {
-#ifndef __CCUNICODE_NOSTDALLOC__
-        AllocPtr = &ccunicode_DefaultAllocator;
-#else
-        return CCUNICODE_NULL_ALLOCATOR;
-#endif
-    }
-
-    if (!AllocPtr->malloc_func || !AllocPtr->free_func)
-        return CCUNICODE_INVALID_ALLOCATOR;
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
 
     if (!Utf16Str)
         return CCUNICODE_NULL_POINTER;
@@ -872,4 +856,262 @@ int ccunicode_CodepointsToUtf16_nm(const uint32_t *Codepoints, int CodepointCoun
 
     Utf16Str[WritePos] = 0;
     return WritePos;
+}
+
+#ifndef __CCUNICODE_NOSTDALLOC__
+int ccunicode_Utf8ToUtf16(const uint8_t *Utf8Str, uint16_t **Utf16Str)
+{
+    return ccunicode_Utf8ToUtf16_a(Utf8Str, Utf16Str, NULL);
+}
+
+int ccunicode_Utf8ToUtf16_n(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str)
+{
+    return ccunicode_Utf8ToUtf16_na(Utf8Str, Utf8Size, Utf16Str, NULL);
+}
+
+int ccunicode_Utf8ToUtf16_m(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size)
+{
+    return ccunicode_Utf8ToUtf16_ma(Utf8Str, Utf16Str, Utf16Size, NULL);
+}
+
+int ccunicode_Utf8ToUtf16_nm(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size)
+{
+    return ccunicode_Utf8ToUtf16_nma(Utf8Str, Utf8Size, Utf16Str, Utf16Size, NULL);
+}
+
+int ccunicode_Utf8ToUtf16_l(const uint8_t *Utf8Str, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    return ccunicode_Utf8ToUtf16_la(Utf8Str, Utf16Str, Codepoints, MaxCodepointsCount, NULL);
+}
+
+int ccunicode_Utf8ToUtf16_nl(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    return ccunicode_Utf8ToUtf16_nla(Utf8Str, Utf8Size, Utf16Str, Codepoints, MaxCodepointsCount, NULL);
+}
+
+int ccunicode_Utf8ToUtf16_ml(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    return ccunicode_Utf8ToUtf16_mla(Utf8Str, Utf16Str, Utf16Size, Codepoints, MaxCodepointsCount, NULL);
+}
+#endif
+
+int ccunicode_Utf8ToUtf16_a(const uint8_t *Utf8Str, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf8ToCodepoints_a(Utf8Str, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf16_na(Codepoints, CodepointCount, Utf16Str, AllocPtr);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf8ToUtf16_na(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf8ToCodepoints_na(Utf8Str, Utf8Size, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf16_na(Codepoints, CodepointCount, Utf16Str, AllocPtr);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf8ToUtf16_ma(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf8ToCodepoints_a(Utf8Str, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf16_nm(Codepoints, CodepointCount, Utf16Str, Utf16Size);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf8ToUtf16_nma(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf8ToCodepoints_na(Utf8Str, Utf8Size, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf16_nm(Codepoints, CodepointCount, Utf16Str, Utf16Size);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf8ToUtf16_la(const uint8_t *Utf8Str, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    int Res = ccunicode_Utf8ToCodepoints_m(Utf8Str, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf16_na(Codepoints, MaxCodepointsCount, Utf16Str, AllocPtr);
+}
+
+int ccunicode_Utf8ToUtf16_nla(const uint8_t *Utf8Str, int Utf8Size, uint16_t **Utf16Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    int Res = ccunicode_Utf8ToCodepoints_nm(Utf8Str, Utf8Size, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf16_na(Codepoints, MaxCodepointsCount, Utf16Str, AllocPtr);
+}
+
+int ccunicode_Utf8ToUtf16_mla(const uint8_t *Utf8Str, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    int Res = ccunicode_Utf8ToCodepoints_m(Utf8Str, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf16_nm(Codepoints, MaxCodepointsCount, Utf16Str, Utf16Size);
+}
+
+int ccunicode_Utf8ToUtf16_nml(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    int Res = ccunicode_Utf8ToCodepoints_nm(Utf8Str, Utf8Size, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf16_nm(Codepoints, MaxCodepointsCount, Utf16Str, Utf16Size);
+}
+
+#ifndef __CCUNICODE_NOSTDALLOC__
+int ccunicode_Utf16ToUtf8(const uint16_t *Utf16Str, uint8_t **Utf8Str)
+{
+    return ccunicode_Utf16ToUtf8_a(Utf16Str, Utf8Str, NULL);
+}
+
+int ccunicode_Utf16ToUtf8_n(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str)
+{
+    return ccunicode_Utf16ToUtf8_na(Utf16Str, Utf16Size, Utf8Str, NULL);
+}
+
+int ccunicode_Utf16ToUtf8_m(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size)
+{
+    return ccunicode_Utf16ToUtf8_ma(Utf16Str, Utf8Str, Utf8Size, NULL);
+}
+
+int ccunicode_Utf16ToUtf8_nm(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size)
+{
+    return ccunicode_Utf16ToUtf8_nma(Utf16Str, Utf16Size, Utf8Str, Utf8Size, NULL);
+}
+
+int ccunicode_Utf16ToUtf8_l(const uint16_t *Utf16Str, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    return ccunicode_Utf16ToUtf8_la(Utf16Str, Utf8Str, Codepoints, MaxCodepointsCount, NULL);
+}
+
+int ccunicode_Utf16ToUtf8_nl(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    return ccunicode_Utf16ToUtf8_nla(Utf16Str, Utf16Size, Utf8Str, Codepoints, MaxCodepointsCount, NULL);
+}
+
+int ccunicode_Utf16ToUtf8_ml(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    return ccunicode_Utf16ToUtf8_mla(Utf16Str, Utf8Str, Utf8Size, Codepoints, MaxCodepointsCount, NULL);
+}
+#endif
+
+int ccunicode_Utf16ToUtf8_a(const uint16_t *Utf16Str, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf16ToCodepoints_a(Utf16Str, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf8_na(Codepoints, CodepointCount, Utf8Str, AllocPtr);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf16ToUtf8_na(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf16ToCodepoints_na(Utf16Str, Utf16Size, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf8_na(Codepoints, CodepointCount, Utf8Str, AllocPtr);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf16ToUtf8_ma(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf16ToCodepoints_a(Utf16Str, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf8_nm(Codepoints, CodepointCount, Utf8Str, Utf8Size);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf16ToUtf8_nma(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    CCUNICODE_INTERNAL_TEST(ccunicode_CheckAllocator(&AllocPtr))
+
+    uint32_t *Codepoints = NULL;
+    int CodepointCount = ccunicode_Utf16ToCodepoints_na(Utf16Str, Utf16Size, &Codepoints, AllocPtr);
+    if (CodepointCount < 0)
+        return CodepointCount;
+
+    int Res = ccunicode_CodepointsToUtf8_nm(Codepoints, CodepointCount, Utf8Str, Utf8Size);
+    AllocPtr->free_func(Codepoints);
+    return Res;
+}
+
+int ccunicode_Utf16ToUtf8_la(const uint16_t *Utf16Str, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    int Res = ccunicode_Utf16ToCodepoints_m(Utf16Str, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf8_na(Codepoints, MaxCodepointsCount, Utf8Str, AllocPtr);
+}
+
+int ccunicode_Utf16ToUtf8_nla(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    int Res = ccunicode_Utf16ToCodepoints_nm(Utf16Str, Utf16Size, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf8_na(Codepoints, MaxCodepointsCount, Utf8Str, AllocPtr);
+}
+
+int ccunicode_Utf16ToUtf8_mla(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+{
+    int Res = ccunicode_Utf16ToCodepoints_m(Utf16Str, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf8_nm(Codepoints, MaxCodepointsCount, Utf8Str, Utf8Size);
+}
+
+int ccunicode_Utf16ToUtf8_nml(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount)
+{
+    int Res = ccunicode_Utf16ToCodepoints_nm(Utf16Str, Utf16Size, Codepoints, MaxCodepointsCount);
+    if (Res < 0)
+        return Res;
+
+    return ccunicode_CodepointsToUtf8_nm(Codepoints, MaxCodepointsCount, Utf8Str, Utf8Size);
 }
