@@ -895,25 +895,285 @@ extern "C"
     int ccunicode_Utf8ToUtf16_nml(const uint8_t *Utf8Str, int Utf8Size, uint16_t *Utf16Str, int Utf16Size, uint32_t *Codepoints, int MaxCodepointsCount);
 
 #ifndef __CCUNICODE_NOSTDALLOC__
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has no suffix. This means memory is allocated dynamically using the standard library,
+    /// and the utf16 string must be null terminated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8(const uint16_t *Utf16Str, uint8_t **Utf8Str);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a n suffix. This means memory is allocated dynamically using the standard library,
+    /// and the utf16 string is processed until a null character is encountered or some maximum size
+    /// is reached.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_n(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str);
 
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a m suffix. This means temporary memory is allocated dynamically using the standard library,
+    /// and the utf16 string is processed until a null character is encountered but the output is
+    /// sent to preallocated buffer.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a buffer that will hold the resulting UTF16 string.
+    /// \param Utf8Size Number of bytes that the buffer can hold (not counting the last 0).
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_m(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a nm suffix. This means temporary memory is allocated dynamically using the standard library,
+    /// and the utf16 string is processed until a null character is encountered or some maximum size is reached but the output is
+    /// sent to preallocated buffer.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a buffer that will hold the resulting UTF16 string.
+    /// \param Utf8Size Number of bytes that the buffer can hold (not counting the last 0).
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_nm(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size);
 
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a l suffix. This means no temporary memory is allocated (a temp buffer must be provided),
+    /// and the utf16 string is processed until a null character is encountered. The output buffer is dynamically allocated
+    /// though.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a pointer that will hold the resulting utf8 string. The user is responsible for freeing memory.
+    /// \param Codepoints Pointer to a temporary buffer for storing codepoints.
+    /// \param MaxCodepointsCount Maximum number of codepoints the buffer can hold (not counting the terminal '\0')
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_l(const uint16_t *Utf16Str, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a nl suffix. This means no temporary memory is allocated (a temp buffer must be provided),
+    /// and the utf16 string is processed until a null character is encountered or some maximum length is reached.
+    /// The output buffer is dynamically allocated though.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a pointer that will hold the resulting utf8 string. The user is responsible for freeing memory.
+    /// \param Codepoints Pointer to a temporary buffer for storing codepoints.
+    /// \param MaxCodepointsCount Maximum number of codepoints the buffer can hold (not counting the terminal '\0')
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_nl(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount);
 #endif
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a a suffix. This means memory is allocated dynamically using user-defined functions,
+    /// and the utf16 string must be null terminated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_a(const uint16_t *Utf16Str, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a na suffix. This means memory is allocated dynamically using user-defined functions,
+    /// and the utf16 string is processed until a null character is encountered or some maximum size
+    /// is reached.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_na(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, const TCCUnicode_MallocPtr *AllocPtr);
 
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a ma suffix. This means temporary memory is allocated dynamically using user-defined functions
+    /// and the utf16 string is processed until a null character is encountered but the output is
+    /// sent to preallocated buffer.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a buffer that will hold the resulting UTF8 string.
+    /// \param Utf8Size Number of bytes that the buffer can hold (not counting the last 0).
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_ma(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, const TCCUnicode_MallocPtr *AllocPtr);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a nma suffix. This means temporary memory is allocated dynamically using user-defined functions,
+    /// and the utf16 string is processed until a null character is encountered or some maximum size is reached but the output is
+    /// sent to preallocated buffer.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a buffer that will hold the resulting UTF8 string.
+    /// \param Utf8Size Number of bytes that the buffer can hold (not counting the last 0).
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_nma(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size, const TCCUnicode_MallocPtr *AllocPtr);
 
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a la suffix. This means no temporary memory is allocated (a temp buffer must be provided),
+    /// and the utf8 string is processed until a null character is encountered. The output buffer is dynamically allocated
+    /// though, using user-defined functions.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a pointer that will hold the resulting utf8 string. The user is responsible for freeing memory.
+    /// \param Codepoints Pointer to a temporary buffer for storing codepoints.
+    /// \param MaxCodepointsCount Maximum number of codepoints the buffer can hold (not counting the terminal '\0')
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_la(const uint16_t *Utf16Str, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a nla suffix. This means no temporary memory is allocated (a temp buffer must be provided),
+    /// and the utf16 string is processed until a null character is encountered or some maximum length is reached.
+    /// The output buffer is dynamically allocated though, using user-defined functions.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a pointer that will hold the resulting utf8 string. The user is responsible for freeing memory.
+    /// \param Codepoints Pointer to a temporary buffer for storing codepoints.
+    /// \param MaxCodepointsCount Maximum number of codepoints the buffer can hold (not counting the terminal '\0')
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_nla(const uint16_t *Utf16Str, int Utf16Size, uint8_t **Utf8Str, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr);
 
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a ml suffix. This means no temporary memory is allocated (a temp buffer must be provided),
+    /// and the utf16 string is processed until a null character is encountered.
+    /// The output buffer must also be already allocated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF16 string.
+    /// \param Utf8Str Pointer to a buffer that will hold the resulting string.
+    /// \param Utf8Size Number of bytes the previous buffer can hold (not counting the final 0).
+    /// \param Codepoints Pointer to a temporary buffer for storing codepoints.
+    /// \param MaxCodepointsCount Maximum number of codepoints the buffer can hold (not counting the terminal '\0')
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_ml(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount);
+
+    /// \brief Converts an UTF16 string into an UTF8 one.
+    ///
+    /// This version has a ml suffix. This means no temporary memory is allocated (a temp buffer must be provided),
+    /// and the utf16 string is processed until a null character is encountered or some maximum size is reached.
+    /// The output buffer must also be already allocated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Utf16Str Pointer to a null-terminated UTF8 string.
+    /// \param Utf16Size Maximum number of shorts to process.
+    /// \param Utf8Str Pointer to a buffer that will hold the resulting string.
+    /// \param Utf8Size Number of bytes the previous buffer can hold (not counting the final 0).
+    /// \param Codepoints Pointer to a temporary buffer for storing codepoints.
+    /// \param MaxCodepointsCount Maximum number of codepoints the buffer can hold (not counting the terminal '\0')
+    /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_Utf16ToUtf8_nml(const uint16_t *Utf16Str, int Utf16Size, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount);
 
 #   ifdef __CCUNICODE_IMPL__
@@ -1985,7 +2245,7 @@ int ccunicode_Utf16ToUtf8_nla(const uint16_t *Utf16Str, int Utf16Size, uint8_t *
     return ccunicode_CodepointsToUtf8_na(Codepoints, MaxCodepointsCount, Utf8Str, AllocPtr);
 }
 
-int ccunicode_Utf16ToUtf8_mla(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount, const TCCUnicode_MallocPtr *AllocPtr)
+int ccunicode_Utf16ToUtf8_ml(const uint16_t *Utf16Str, uint8_t *Utf8Str, int Utf8Size, uint32_t *Codepoints, int MaxCodepointsCount)
 {
     int Res = ccunicode_Utf16ToCodepoints_m(Utf16Str, Codepoints, MaxCodepointsCount);
     if (Res < 0)
