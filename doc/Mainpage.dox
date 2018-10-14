@@ -1,0 +1,13 @@
+/*! \mainpage
+
+Welcome to the ccunicode header-only library
+
+\section What What is ccunicode?
+
+ccunicode is a small utf8<->utf16<->codepoints conversion library I wrote as this seems to pop up in many code I am writing. It is provided as a single-header C library to be useful in most projects and easily (as C/C++ dependency management is still very lacking).
+
+\section How How to use this documentation?
+
+This documentation is created directly from doxygen style comments in the code. It should be helpful to understand what each function does.
+
+*/
