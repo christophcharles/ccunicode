@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(ccunicode)
 
+# Enable the new IN_LIST operator for Doxygen
+cmake_policy(SET CMP0057 NEW)
+
 set(INCLUDES
   include/ccunicode.h)
   
@@ -65,3 +68,5 @@ add_test(
 add_test(
     NAME Utf16ToUtf8
     COMMAND test_Utf16ToUtf8)
+
+add_subdirectory(doc)
