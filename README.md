@@ -8,9 +8,9 @@ Please refer to the doxygen documentation for more details.
 
 ## How to use ccunicode ?
 
-ccunicode is a header-only library. Just copy the single include file into your project. Add a C (not C++) source file into your project and define the macro __CCUNICODE_IMPL__ before including the header in this C file. This will trigger the implementation of the various functions into your C file. You can look at src/ccunicode.c for an example of such a file.
+ccunicode is a header-only library. Just copy the single include file into your project. Add a C (not C++) source file into your project and define the macro \__CCUNICODE_IMPL__ before including the header in this C file. This will trigger the implementation of the various functions into your C file. You can look at src/ccunicode.c for an example of such a file.
 
-You can also define the macro __CCUNICODE_NOSTDALLOC__ in your C file (beofre including). This will prevent ccunicode to link with the standard library for allocations. You will need however to provide systematically your own allocations functions if ccunicode requires memory allocations. It is not necessary but it is recommended to also define __CCUNICODE_NOSTDALLOC__ before including in your other source files. This will prevent the declaration of some ccunicode functions that would otherwise result in linking error if misused.
+You can also define the macro \__CCUNICODE_NOSTDALLOC__ in your C file (before including). This will prevent ccunicode to link with the standard library for allocations. You will need however to provide systematically your own allocations functions if ccunicode requires memory allocations. It is not necessary but it is recommended to also define \__CCUNICODE_NOSTDALLOC__ before including in your other source files. This will prevent the declaration of some ccunicode functions that would otherwise result in linking error if misused.
 
 ## Licensing
 
