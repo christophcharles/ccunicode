@@ -477,7 +477,7 @@ extern "C"
     ///
     /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
     /// \param Utf8Str Pointer to a buffer that will hold the resulting string
-    /// \param Utf8Size Maximum number of character the buffer can hold (not including the terminal '\0').
+    /// \param Utf8Size Maximum number of bytes the buffer can hold (not including the terminal '\0').
     /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf8_m(const uint32_t *Codepoints, uint8_t *Utf8Str, int Utf8Size);
 
@@ -497,18 +497,119 @@ extern "C"
     /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
     /// \param CodepointCount Maximum number of codepoint to convert (0 not included).
     /// \param Utf8Str Pointer to a buffer that will hold the resulting string
-    /// \param Utf8Size Maximum number of character the buffer can hold (not including the terminal '\0').
+    /// \param Utf8Size Maximum number of bytes the buffer can hold (not including the terminal '\0').
     /// \return The number of bytes outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf8_nm(const uint32_t *Codepoints, int CodepointCount, uint8_t *Utf8Str, int Utf8Size);
 
 #ifndef __CCUNICODE_NOSTDALLOC__
+    /// \brief Converts a null-terminated array of codepoints to a null-terminated UTF16 string
+    ///
+    /// This version has no suffix. This means memory is allocated dynamically using the standard library,
+    /// and the codepoints array must be null-terminated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
+    /// \param Utf16Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \return The number of shorts outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf16(const uint32_t *Codepoints, uint16_t **Utf16Str);
+
+    /// \brief Converts a null-terminated array of codepoints to a null-terminated UTF16 string
+    ///
+    /// This version has a n suffix. This means memory is allocated dynamically using the standard library,
+    /// and the codepoints array is read until a null codepoint is found or a maximum  has been treated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Codepoints Pointer to a (possibly null-terminated) array of codepoints to convert
+    /// \param CodepointCount Maximum number of codepoints to convert
+    /// \param Utf16Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \return The number of shorts outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf16_n(const uint32_t *Codepoints, int CodepointCount, uint16_t **Utf16Str);
 #endif
+    /// \brief Converts a null-terminated array of codepoints to a null-terminated UTF16 string
+    ///
+    /// This version has an a suffix. This means memory is allocated dynamically using user defined functions,
+    /// and the codepoints array must be null-terminated.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
+    /// \param Utf16Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of shorts outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf16_a(const uint32_t *Codepoints, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr);
+
+    /// \brief Converts a array of codepoints to a null-terminated UTF16 string
+    ///
+    /// This version has an na suffix. This means memory is allocated dynamically using user defined functions,
+    /// and the codepoints array is explored until a null codepoint is found or some maximum length is reached.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
+    /// \param CodepointCount Maximum number of codepoint to decode
+    /// \param Utf16Str Pointer to a pointer that will hold the address of the resulting string. The user is responsible for freeing the memory.
+    /// \param AllocPtr Pointer to a TCCUnicode_MallocPtr struct or NULL to use the standard library (if __CCUNICODE_NOSTDALLOC__ is not defined)
+    /// \return The number of shorts outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf16_na(const uint32_t *Codepoints, int CodepointCount, uint16_t **Utf16Str, const TCCUnicode_MallocPtr *AllocPtr);
 
+    /// \brief Converts a null-terminated array of codepoints to a null-terminated UTF16 string
+    ///
+    /// This version has an m suffix. This means an already allocated buffer is used and
+    /// and the codepoints array is explored until a null codepoint is found.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
+    /// \param Utf16Str Pointer to a buffer that will hold the resulting string
+    /// \param Utf16Size Maximum number of shorts the buffer can hold (not including the terminal '\0').
+    /// \return The number of shorts outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf16_m(const uint32_t *Codepoints, uint16_t *Utf16Str, int Utf16Size);
+
+    /// \brief Converts an array of codepoints to a null-terminated UTF16 string
+    ///
+    /// This version has an nm suffix. This means an already allocated buffer is used and
+    /// and the codepoints array is explored until either a null codepoint is found or
+    /// the maximum size is reached.
+    ///
+    /// Generally the following suffixes are possible:
+    /// n: a maximum length for the source string is given
+    /// m: a maximum length for the output buffer is given
+    /// l: a temporary buffer and its size are given to avoid internal allocation (when applicable)
+    /// a: a TCCUnicode_MallocPtr struct is provided to enable user-defined allocation strategies.
+    /// Lengths never include the final null character and so buffer should have 1 more byte, short or int available.
+    ///
+    /// \param Codepoints Pointer to a null-terminated array of codepoints to convert
+    /// \param CodepointCount Maximum number of codepoint to convert (0 not included).
+    /// \param Utf16Str Pointer to a buffer that will hold the resulting string
+    /// \param Utf16Size Maximum number of shorts the buffer can hold (not including the terminal '\0').
+    /// \return The number of shorts outputed (except for the final 0) or a negative number on error.
     int ccunicode_CodepointsToUtf16_nm(const uint32_t *Codepoints, int CodepointCount, uint16_t *Utf16Str, int Utf16Size);
 
 #ifndef __CCUNICODE_NOSTDALLOC__
