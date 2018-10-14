@@ -36,43 +36,132 @@ extern "C"
 {
 #endif
 
+    /// \brief Possible error codes returned by the various ccunicode functions
     enum TCCUnicode_ErrorCode
     {
-        CCUNICODE_NO_ERROR                  =  0,
-        CCUNICODE_NULL_POINTER              = -1,
-        CCUNICODE_INVALID_UTF8_CHARACTER    = -2,
-        CCUNICODE_INVALID_UTF16_CHARACTER   = -3,
-        CCUNICODE_STRING_ENDED_IN_CHARACTER = -4,
-        CCUNICODE_INVALID_CODEPOINT         = -5,
-        CCUNICODE_SURROGATE_PAIR_INVERSION  = -6,
-        CCUNICODE_INVALID_ALLOCATOR         = -7,
-        CCUNICODE_NULL_ALLOCATOR            = -8,
-        CCUNICODE_BAD_ALLOCATION            = -9,
-        CCUNICODE_OVERFLOW                  = -10,
-        CCUNICODE_INVALID_PARAMETER         = -11,
-        CCUNICODE_BUFFER_TOO_SMALL          = -12
+        CCUNICODE_NO_ERROR                  =  0,   ///< No error (positive values also indicate no error)
+        CCUNICODE_NULL_POINTER              = -1,   ///< A NULL-pointer was given either as source or destination
+        CCUNICODE_INVALID_UTF8_CHARACTER    = -2,   ///< Conversion had to stop: invalid UTF8 character found
+        CCUNICODE_INVALID_UTF16_CHARACTER   = -3,   ///< Conversion had to stop: invalid UTF16 character found
+        CCUNICODE_STRING_ENDED_IN_CHARACTER = -4,   ///< Conversion had to stop: the string ends in a multiple codeunits character
+        CCUNICODE_INVALID_CODEPOINT         = -5,   ///< Conversion had to stop: invalid codepoint
+        CCUNICODE_SURROGATE_PAIR_INVERSION  = -6,   ///< Conversion had to stop: a second codeunit from a surrogate pair was found without the first one
+        CCUNICODE_INVALID_ALLOCATOR         = -7,   ///< The pointer to malloc or free is invalid
+        CCUNICODE_NULL_ALLOCATOR            = -8,   ///< NULL pointer given for Allocator but ccunicode is compiled without standard alloc support
+        CCUNICODE_BAD_ALLOCATION            = -9,   ///< Error while allocating memory
+        CCUNICODE_OVERFLOW                  = -10,  ///< Integer overflow
+        CCUNICODE_INVALID_PARAMETER         = -11,  ///< Invalid parameter (usually negative sizes)
+        CCUNICODE_BUFFER_TOO_SMALL          = -12   ///< Temporary or destination buffer too small to hold the result
     };
 
+    /// \brief Allocator structure to hold pointers to user-defined malloc and free
     typedef struct
     {
-        void *(*malloc_func)(size_t);
-        void (*free_func)(void*);
+        void *(*malloc_func)(size_t); ///< Pointer to a user-defined malloc function
+        void (*free_func)(void*);     ///< Pointer to a user-defined free function
     } TCCUnicode_MallocPtr;
 
+    /// \brief Utility function: counts the number of bytes in a UTF8 string until the terminal '\0'
+    ///
+    /// This functions works similarly to strlen. It is here to avoid using the standard library.
+    ///
+    /// \param Utf8Str pointer to a UTF-8 encoded string
+    /// \return the number of bytes (codeunits not characters) in the string, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetUtf8StrLen(const uint8_t *Utf8Str);
+
+    /// \brief Utility function: counts the number of shorts in a UTF16 string until the terminal '\0'
+    ///
+    /// This functions works similarly to strlen. It is here to avoid using the standard library.
+    ///
+    /// \param Utf16Str pointer to a UTF-16 encoded string
+    /// \return the number of shorts (codeunits not characters) in the string, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetUtf16StrLen(const uint16_t *Utf16Str);
+
+    /// \brief Utility function: counts the number of codepoints in null-terminated list of codepoints.
+    ///
+    /// This functions works similarly to strlen. It is here to avoid using the standard library.
+    ///
+    /// \param Codepoints pointer to a null-terminated array of codepoints
+    /// \return the number of codepoints in the array, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetCodepointCount(const uint32_t *Codepoints);
 
+    /// \brief Utility function: counts the number of codepoints in a null-terminated UTF8 string
+    ///
+    /// This version stops at the final null byte.
+    ///
+    /// \param Utf8Str pointer to a null-terminated utf8 string
+    /// \return the number of codepoints in the string, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_CountCodepointsInUtf8(const uint8_t *Utf8Str);
+
+    /// \brief Utility function: counts the number of codepoints in a null-terminated UTF8 string
+    ///
+    /// This version stops either at the final null byte or if Utf8Size is reached.
+    ///
+    /// \param Utf8Str pointer to a null-terminated utf8 string
+    /// \param Utf8Size maximum number of bytes to explore
+    /// \return the number of codepoints in the string, excluding the final '\0' if reached. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_CountCodepointsInUtf8_n(const uint8_t *Utf8Str, int Utf8Size);
 
+    /// \brief Utility function: counts the number of codepoints in a null-terminated UTF16 string
+    ///
+    /// This version stops at the final null byte.
+    ///
+    /// \param Utf16Str pointer to a null-terminated utf16 string
+    /// \return the number of codepoints in the string, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_CountCodepointsInUtf16(const uint16_t *Utf16Str);
+
+    /// \brief Utility function: counts the number of codepoints in a null-terminated UTF16 string
+    ///
+    /// This version stops either at the final null byte or if Utf16Size is reached.
+    ///
+    /// \param Utf16Str pointer to a null-terminated utf16 string
+    /// \param Utf16Size maximum number of shorts to explore
+    /// \return the number of codepoints in the string, excluding the final '\0' if reached. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_CountCodepointsInUtf16_n(const uint16_t *Utf16Str, int Utf16Size);
 
+    /// \brief Utility function: compute the number of bytes needed (excluding final '\0') to store an array of codepoints as UTF8
+    ///
+    /// This version stops at the final null codepoint.
+    ///
+    /// \param Codepoints pointer to a null-terminated array of codepoints.
+    /// \return the number of bytes needed to encode as UTF8, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetUtf8SizeFromCodepoints(const uint32_t *Codepoints);
+
+    /// \brief Utility function: compute the number of bytes needed (excluding final '\0') to store an array of codepoints as UTF8
+    ///
+    /// This version stops either at the final null codepoint or if CodepointCount codepoints havec been processed.
+    ///
+    /// \param Codepoints pointer to a null-terminated array of codepoints.
+    /// \param CodepointCount Maximum number of codepoint to consider.
+    /// \return the number of bytes needed to encode as UTF8, excluding the final '\0' if reached. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetUtf8SizeFromCodepoints_n(const uint32_t *Codepoints, int CodepointCount);
 
+    /// \brief Utility function: compute the number of shorts needed (excluding final '\0') to store an array of codepoints as UTF16
+    ///
+    /// This version stops at the final null codepoint.
+    ///
+    /// \param Codepoints pointer to a null-terminated array of codepoints.
+    /// \return the number of shorts needed to encode as UTF16, excluding the final '\0'. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetUtf16SizeFromCodepoints(const uint32_t *Codepoints);
+
+    /// \brief Utility function: compute the number of shorts needed (excluding final '\0') to store an array of codepoints as UTF16
+    ///
+    /// This version stops either at the final null codepoint or if CodepointCount codepoints havec been processed.
+    ///
+    /// \param Codepoints pointer to a null-terminated array of codepoints.
+    /// \param CodepointCount Maximum number of codepoint to consider.
+    /// \return the number of shorts needed to encode as UTF16, excluding the final '\0' if reached. The empty string returns 0 for instance.
+    ///         On error, return a negative number corresponding to a TCCUnicode_ErrorCode
     int ccunicode_GetUtf16SizeFromCodepoints_n(const uint32_t *Codepoints, int CodepointCount);
 
 #ifndef __CCUNICODE_NOSTDALLOC__
