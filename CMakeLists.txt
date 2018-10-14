@@ -3,8 +3,7 @@ cmake_minimum_required(VERSION 2.8.9)
 project(ccunicode)
 
 set(INCLUDES
-  include/ccunicode.h
-  include/ccunicode_impl.h)
+  include/ccunicode.h)
   
 set(LIB_SOURCES
   src/ccunicode.c)
